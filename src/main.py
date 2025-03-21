@@ -1,23 +1,43 @@
-from llama_index import VectorStoreIndex, StorageContext
-from llama_index.vector_stores import FaissVectorStore
-from llama_index.embeddings import HuggingFaceEmbedding
+from llama_index.core import VectorStoreIndex
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from utils.data_loader import load_documents
 from utils.metadata_handler import add_folder_metadata
-from config import EMBED_MODEL_NAME, INDEX_DIR
+from config import INDEX_DIR, EMBED_MODEL_NAME
+import os
 
-# ドキュメントの読み込みとメタデータ追加
-documents = load_documents()
-documents = add_folder_metadata(documents)
+def main():
+    # フォルダの確認と作成
+    if not os.path.exists(INDEX_DIR):
+        os.makedirs(INDEX_DIR, exist_ok=True)
+        print(f"インデックスディレクトリを作成しました: {INDEX_DIR}")
 
-# 埋め込みモデルの設定
-embed_model = HuggingFaceEmbedding(model_name=EMBED_MODEL_NAME)
+    # ドキュメントの読み込み
+    print("ドキュメントを読み込んでいます...")
+    documents = load_documents()
+    if not documents:
+        print("警告: ドキュメントが読み込めませんでした。PDF_DIRの設定を確認してください。")
+        return
 
-# FAISSベクトルストアの設定
-vector_store = FaissVectorStore(dim=384)
-storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    # メタデータの追加
+    print("メタデータを追加しています...")
+    documents = add_folder_metadata(documents)
 
-# インデックスの作成
-index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, embed_model=embed_model)
+    # エンベディングモデルの設定
+    print(f"エンベディングモデルを初期化しています: {EMBED_MODEL_NAME}")
+    embed_model = HuggingFaceEmbedding(model_name=EMBED_MODEL_NAME)
 
-# インデックスの保存
-index.storage_context.persist(persist_dir=INDEX_DIR)
+    # インデックスの作成（エンベディングモデルを明示的に指定）
+    print("インデックスを作成しています...")
+    index = VectorStoreIndex.from_documents(
+        documents,
+        embed_model=embed_model
+    )
+
+    # インデックスの保存
+    print(f"インデックスを保存しています: {INDEX_DIR}")
+    index.storage_context.persist(persist_dir=INDEX_DIR)
+    print("インデックスの作成が完了しました！")
+    print(f"次のコマンドで対話型RAGシステムを起動できます: python src/interactive_rag.py")
+
+if __name__ == "__main__":
+    main()
