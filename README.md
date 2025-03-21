@@ -63,8 +63,8 @@ PDF_DIR=/path/to/your/pdf/documents
 INDEX_DIR=/path/to/store/vector/index
 ```
 
-- `PDF_DIR`: PDF文書が格納されているディレクトリへのパス
-- `INDEX_DIR`: ベクトルインデックスを保存するディレクトリへのパス
+- `PDF_DIR`: PDF文書が格納されているディレクトリへのパス（ここをOnedrive上のPDF資料を入れていたディレクトリパスにする。エクスプローラーでコピーできるやつ。）
+- `INDEX_DIR`: ベクトルインデックスを保存するディレクトリへのパス（ここは`/index`ディレクトリをつかう。入っているファイル名を使うことも可。）
 
 ### 5. インデックスの作成
 
