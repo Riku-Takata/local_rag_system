@@ -5,3 +5,4 @@ src/llm/models/
 src/index/faiss_index/
 *.pyc
 __pycache__/
+.env

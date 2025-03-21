@@ -1,0 +1,6 @@
+llama-index
+sentence-transformers
+faiss-cpu
+pdfminer.six
+python-dotenv
+pytest
