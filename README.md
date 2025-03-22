@@ -35,7 +35,7 @@
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/yourusername/japanese-rag-system.git
+git clone https://github.com/yourusername/local_rag_system.git
 cd japanese-rag-system
 ```
 
@@ -45,7 +45,7 @@ cd japanese-rag-system
 python -m venv rag_env
 source rag_env/bin/activate  # Linuxの場合
 # または
-rag_env\Scripts\activate     # Windowsの場合
+.\rag_env\Scripts\activate     # Windowsの場合
 ```
 
 ### 3. 依存関係のインストール
