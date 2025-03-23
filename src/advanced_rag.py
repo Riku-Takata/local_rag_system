@@ -45,7 +45,8 @@ def create_chat_engine(index, similarity_top_k=3, similarity_cutoff=0.7, verbose
         return None
     
     # LLMの設定
-    llm = Ollama(model=LLM_MODEL, temperature=0.1)
+    from llm_integration import get_ollama_llm
+    llm = get_ollama_llm(temperature=0.1)
     
     # チャットメモリの設定
     memory = ChatMemoryBuffer.from_defaults(token_limit=4096)

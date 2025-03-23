@@ -22,7 +22,8 @@ def initialize_chat_engine():
         index = load_index_from_storage(storage_context)
         
         # LLMの設定
-        llm = Ollama(model=LLM_MODEL)
+        from llm_integration import get_ollama_llm
+        llm = get_ollama_llm()
         
         # チャットメモリの設定
         memory = ChatMemoryBuffer.from_defaults(token_limit=4096)
