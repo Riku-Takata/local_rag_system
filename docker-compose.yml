@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # OllamaサービスコンテナでLLMを実行
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+    # mistral:7bモデルを事前に取得
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 10
+        ollama pull mistral:7b
+        # バックグラウンドジョブが終了するのを防止
+        tail -f /dev/null
+      "
+
+  # RAG アプリケーションコンテナ
+  rag-app:
+    build: .
+    container_name: rag-app
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - /path/to/your/pdfs/:/data/pdfs
+      - index-data:/data/index
+    environment:
+      - PDF_DIR=/data/pdfs
+      - INDEX_DIR=/data/index
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+    depends_on:
+      - ollama
+    ports:
+      - "8000:5000"
+    # コマンドはシェルスクリプトを通して実行（順次処理のため）
+    command: >
+      sh -c "
+        echo '環境変数を.envファイルに書き込み中...'
+        echo 'PDF_DIR=/data/pdfs' > .env
+        echo 'INDEX_DIR=/data/index' >> .env
+        
+        echo 'Ollamaサーバーが準備できるまで待機中...'
+        sleep 20
+        
+        # 選択したコマンドを実行（デフォルトはWebインターフェース）
+        python src/web_interface.py
+      "
+
+volumes:
+  pdf-data:
+    driver: local
+  index-data:
+    driver: local
+  ollama-models:
+    driver: local

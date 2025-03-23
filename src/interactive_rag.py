@@ -43,7 +43,8 @@ def create_chat_engine(index):
         retriever = index.as_retriever(similarity_top_k=3)
         
         # LLMの設定
-        llm = Ollama(model=LLM_MODEL)
+        from llm_integration import get_ollama_llm
+        llm = get_ollama_llm()
         
         # チャットメモリの設定
         memory = ChatMemoryBuffer.from_defaults(token_limit=4096)
