@@ -21,7 +21,78 @@
 - **Webインターフェース**: Flask
 - **テスト**: pytest
 
-## 📋 前提条件
+## 🚀 セットアップと実行 (Docker)
+
+このシステムはDocker & Docker Composeを使用して簡単にセットアップできます。Dockerを使用する方法が推奨されます。
+
+### 前提条件
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### 1. リポジトリのクローン
+
+```bash
+git clone https://github.com/yourusername/japanese-rag-system.git
+cd japanese-rag-system
+```
+
+### 2. PDFディレクトリの設定
+
+`docker-compose.yml`ファイルの以下の行を編集し、PDFファイルが保存されているディレクトリを指定してください:
+
+```yaml
+volumes:
+  - /path/to/your/pdfs/:/data/pdfs
+```
+
+### 3. ビルドと起動
+
+Makefileを使用して簡単に操作できます:
+
+```bash
+# コンテナをビルド
+make build
+
+# システムを起動（Webインターフェースをバックグラウンドで実行）
+make start
+
+# インデックスの作成
+make index
+```
+
+### 4. 各種インターフェースの利用
+
+```bash
+# インタラクティブCLIの使用
+make interactive
+
+# 高度な検索機能を備えたCLIの使用
+make advanced
+
+# Webインターフェースの使用（既に`make start`で起動している場合は不要）
+make web
+```
+
+Webインターフェースには`http://localhost:8000`でアクセスできます。
+
+### 5. その他の操作
+
+```bash
+# システムの停止
+make stop
+
+# ログの表示
+make logs
+
+# コンテナとイメージの削除（データは保持）
+make clean
+```
+
+## 📋 ローカル環境へのインストール（代替方法）
+
+Docker環境が利用できない場合は、ローカルのPython環境にインストールすることもできます。
+
+### 前提条件
 
 - Python 3.8+
 - [Ollama](https://ollama.ai/download)がインストールされ、実行中であること
@@ -30,16 +101,7 @@
   ollama pull mistral:7b
   ```
 
-## 🚀 セットアップと実行
-
-### 1. リポジトリのクローン
-
-```bash
-git clone https://github.com/yourusername/local_rag_system.git
-cd japanese-rag-system
-```
-
-### 2. Python仮想環境の作成
+### 1. Python仮想環境の作成
 
 ```bash
 python -m venv rag_env
@@ -48,13 +110,13 @@ source rag_env/bin/activate  # Linuxの場合
 .\rag_env\Scripts\activate     # Windowsの場合
 ```
 
-### 3. 依存関係のインストール
+### 2. 依存関係のインストール
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. 環境設定ファイルの作成
+### 3. 環境設定ファイルの作成
 
 プロジェクトのルートディレクトリに`.env`ファイルを作成:
 
@@ -63,34 +125,28 @@ PDF_DIR=/path/to/your/pdf/documents
 INDEX_DIR=/path/to/store/vector/index
 ```
 
-- `PDF_DIR`: PDF文書が格納されているディレクトリへのパス（ここをOnedrive上のPDF資料を入れていたディレクトリパスにする。エクスプローラーでコピーできるやつ。）
-- `INDEX_DIR`: ベクトルインデックスを保存するディレクトリへのパス（ここは`src/index/faiss_index`とした）
+- `PDF_DIR`: PDF文書が格納されているディレクトリへのパス
+- `INDEX_DIR`: ベクトルインデックスを保存するディレクトリへのパス（例: `src/index/faiss_index`）
 
-### 5. インデックスの作成
+### 4. インデックスの作成と各種機能の実行
 
 ```bash
+# インデックスの作成
 python src/main.py
-```
 
-### 6. インタラクティブRAGシステムの起動
-
-基本版:
-```bash
+# インタラクティブRAGシステム
 python src/interactive_rag.py
-```
 
-高度な機能を備えたバージョン:
-```bash
+# 高度な機能を備えたバージョン
 python src/advanced_rag.py
-```
 
-Webインターフェース:
-```bash
+# Webインターフェース
 python src/web_interface.py
 ```
-その後、ブラウザで `http://localhost:5000` にアクセスしてください。
 
-## 🏗️ プロジェクト構成
+Webインターフェース利用時は、ブラウザで `http://localhost:5000` にアクセスしてください。
+
+## 📁 プロジェクト構成
 
 ```
 japanese-rag-system/
@@ -98,6 +154,9 @@ japanese-rag-system/
 ├── .gitignore              # Gitの除外設定
 ├── README.md               # プロジェクト説明
 ├── requirements.txt        # 依存パッケージリスト
+├── Dockerfile              # Dockerイメージ定義
+├── docker-compose.yml      # Docker Compose設定
+├── Makefile                # 便利なコマンド集
 ├── src/                    # ソースコード
 │   ├── advanced_rag.py     # 高度なRAGシステム（類似度フィルタリング等）
 │   ├── check_embeddings.py # エンベディングモデル診断ツール
@@ -145,6 +204,10 @@ Ollama対応の他のモデル（例: `llama3`、`mistral-openorca`など）も�
 `advanced_rag.py`で実行時に検索パラメータを指定できます:
 
 ```bash
+# Dockerを使用する場合
+docker-compose run --rm rag-app python src/advanced_rag.py --top-k 5 --cutoff 0.5 --verbose
+
+# ローカル環境の場合
 python src/advanced_rag.py --top-k 5 --cutoff 0.5 --verbose
 ```
 
@@ -154,9 +217,11 @@ python src/advanced_rag.py --top-k 5 --cutoff 0.5 --verbose
 
 ## 📝 使用例
 
-1. PDF文書を`PDF_DIR`に配置します
-2. `python src/main.py`を実行してインデックスを作成します
-3. `python src/interactive_rag.py`を実行してRAGシステムを起動します
+Docker環境を使用した場合:
+
+1. `make index`でインデックスを作成
+2. `make interactive`でRAGシステムを起動
+3. または`make start`でWebインターフェースを起動し、`http://localhost:8000`にアクセス
 4. 質問を入力すると、関連文書に基づいた回答が生成されます
 
 ```
@@ -175,10 +240,17 @@ python src/advanced_rag.py --top-k 5 --cutoff 0.5 --verbose
 問題が発生した場合は以下のツールで診断できます:
 
 ```bash
-python src/install_check.py    # パッケージのインストール状態を確認
-python src/check_embeddings.py # エンベディングモデルの設定を診断
-python src/check_llms.py       # LLMモジュールの設定を診断
-python src/find_pdf_reader.py  # PDFリーダーの設定を診断
+# Dockerを使用する場合
+docker-compose run --rm rag-app python src/install_check.py
+docker-compose run --rm rag-app python src/check_embeddings.py
+docker-compose run --rm rag-app python src/check_llms.py
+docker-compose run --rm rag-app python src/find_pdf_reader.py
+
+# ローカル環境の場合
+python src/install_check.py
+python src/check_embeddings.py
+python src/check_llms.py
+python src/find_pdf_reader.py
 ```
 
 ## 🧪 テスト
@@ -186,12 +258,20 @@ python src/find_pdf_reader.py  # PDFリーダーの設定を診断
 テストを実行するには:
 
 ```bash
+# Dockerを使用する場合
+make test
+
+# ローカル環境の場合
 pytest
 ```
 
 または特定のテストのみ実行:
 
 ```bash
+# Dockerを使用する場合
+docker-compose run --rm rag-app pytest tests/test_data_loader.py
+
+# ローカル環境の場合
 pytest tests/test_data_loader.py
 ```
 
@@ -300,4 +380,3 @@ PDFドキュメントからテキストを抽出するためのPythonライブ�
 4. **検索**：LlamaIndexがユーザークエリを処理し、関連コンテキストを検索
 5. **回答生成**：OllamaのLLMが検索されたコンテキストを使って回答を生成
 
-このアーキテクチャにより、ローカル環境で高性能な日本語対応RAGシステムが実現しています。
