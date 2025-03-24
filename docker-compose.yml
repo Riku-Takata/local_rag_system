@@ -27,7 +27,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./tests:/app/tests
-      - /path/to/your/pdfs/:/data/pdfs
+      - C:\Users\riku_\OneDrive - 富山県立大学\1. SIDLab\2025年度\research\remote_sensing:/data/pdfs
       - index-data:/data/index
     environment:
       - PDF_DIR=/data/pdfs
