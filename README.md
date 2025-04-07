@@ -1,3 +1,5 @@
+<img width="1907" alt="スクリーンショット 2025-03-21 200901" src="https://github.com/user-attachments/assets/9119d384-30f2-4e8c-ac0e-3bfb31a69c09" />
+
 # RAG System
 
 日本語対応の検索拡張生成 (RAG) システム。PDF文書を取り込み、ベクトル検索を用いて質問応答を行います。
